@@ -22,8 +22,9 @@ import {
   Sparkles
 } from 'lucide-react';
 import { EcosystemModuleId } from './types';
+import { LivePriceProvider } from './context/LivePriceContext';
 
-export function App() {
+function AppContent() {
   const [activeSection, setActiveSection] = useState<string>('hero');
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [modalModule, setModalModule] = useState<EcosystemModuleId>('broker');
@@ -168,6 +169,14 @@ export function App() {
         </div>
       </div>
     </div>
+  );
+}
+
+export function App() {
+  return (
+    <LivePriceProvider>
+      <AppContent />
+    </LivePriceProvider>
   );
 }
 

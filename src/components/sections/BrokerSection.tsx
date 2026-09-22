@@ -17,10 +17,11 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Instrument, Position, AccountSummary } from '../../types';
-import { initialInstruments, initialPositions, initialAccount } from '../../data/mockBroker';
+import { initialPositions, initialAccount } from '../../data/mockBroker';
+import { useLivePrices } from '../../context/LivePriceContext';
 
 export const BrokerSection: React.FC = () => {
-  const [instruments, setInstruments] = useState<Instrument[]>(initialInstruments);
+  const { instruments, getInstrument } = useLivePrices();
   const [selectedSymbol, setSelectedSymbol] = useState<string>('XAU/USD');
   const [timeframe, setTimeframe] = useState<string>('15M');
   const [positions, setPositions] = useState<Position[]>(initialPositions);
@@ -29,6 +30,25 @@ export const BrokerSection: React.FC = () => {
   const [orderNotification, setOrderNotification] = useState<string | null>(null);
 
   const currentInstrument = instruments.find((i) => i.symbol === selectedSymbol) || instruments[0];
+
+  // Dynamically calculate live PnL for each open position based on real-time market prices
+  const livePositions = positions.map((pos) => {
+    const inst = getInstrument(pos.symbol);
+    if (!inst) return pos;
+    const currentPrice = pos.type === 'BUY' ? inst.bid : inst.ask;
+    let pnl = 0;
+    if (pos.symbol === 'XAU/USD') {
+      pnl = (currentPrice - pos.openPrice) * pos.lots * 100 * (pos.type === 'BUY' ? 1 : -1);
+    } else if (pos.symbol === 'EUR/USD' || pos.symbol === 'GBP/USD') {
+      pnl = (currentPrice - pos.openPrice) * pos.lots * 100000 * (pos.type === 'BUY' ? 1 : -1);
+    } else {
+      pnl = (currentPrice - pos.openPrice) * pos.lots * (pos.type === 'BUY' ? 1 : -1);
+    }
+    return { ...pos, currentPrice, pnl: parseFloat(pnl.toFixed(2)) };
+  });
+
+  const totalFloatingPnl = livePositions.reduce((acc, p) => acc + p.pnl, 0);
+  const currentEquity = account.balance + totalFloatingPnl;
 
   const handlePlaceOrder = (type: 'BUY' | 'SELL') => {
     const executionPrice = type === 'BUY' ? currentInstrument.ask : currentInstrument.bid;
@@ -106,8 +126,10 @@ export const BrokerSection: React.FC = () => {
           </div>
           <div className="h-6 w-px bg-white/10" />
           <div>
-            <span className="text-slate-400 block text-[10px]">EQUITY</span>
-            <span className="font-mono font-bold text-emerald-400">${account.equity.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+            <span className="text-slate-400 block text-[10px]">LIVE EQUITY</span>
+            <span className={`font-mono font-bold ${totalFloatingPnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+              ${currentEquity.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+            </span>
           </div>
           <div className="h-6 w-px bg-white/10" />
           <div>
@@ -122,11 +144,11 @@ export const BrokerSection: React.FC = () => {
         {/* Top bar: Asset selector + Timeframe pills */}
         <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-white/10">
           <div className="flex items-center gap-2 overflow-x-auto pb-1 max-w-full">
-            {instruments.slice(0, 5).map((inst) => (
+            {instruments.map((inst) => (
               <button
                 key={inst.symbol}
                 onClick={() => setSelectedSymbol(inst.symbol)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
                   selectedSymbol === inst.symbol
                     ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 shadow-[0_0_15px_rgba(0,242,254,0.2)]'
                     : 'bg-white/[0.04] text-slate-300 hover:bg-white/[0.08] border border-white/10'
@@ -170,13 +192,33 @@ export const BrokerSection: React.FC = () => {
                     Spread: {currentInstrument.spread} pips
                   </span>
                 </div>
-                <div className="text-2xl font-bold font-mono text-cyan-400 mt-1">
-                  ${currentInstrument.bid.toLocaleString()}
+                <div className="flex items-center gap-2 mt-1">
+                  <span className={`text-2xl font-bold font-mono transition-colors duration-200 ${
+                    currentInstrument.tickDirection === 'up'
+                      ? 'text-emerald-400'
+                      : currentInstrument.tickDirection === 'down'
+                      ? 'text-rose-400'
+                      : 'text-cyan-400'
+                  }`}>
+                    ${currentInstrument.bid.toLocaleString(undefined, {
+                      minimumFractionDigits: currentInstrument.decimals,
+                      maximumFractionDigits: currentInstrument.decimals,
+                    })}
+                  </span>
+                  {currentInstrument.tickDirection === 'up' && (
+                    <span className="text-emerald-400 text-xs font-mono font-bold flex items-center">▲</span>
+                  )}
+                  {currentInstrument.tickDirection === 'down' && (
+                    <span className="text-rose-400 text-xs font-mono font-bold flex items-center">▼</span>
+                  )}
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                    REAL-TIME
+                  </span>
                 </div>
               </div>
               <div className="text-right text-xs text-slate-400">
-                <div>24h High: <span className="text-white font-mono">${currentInstrument.high24h.toLocaleString()}</span></div>
-                <div>24h Low: <span className="text-white font-mono">${currentInstrument.low24h.toLocaleString()}</span></div>
+                <div>24h High: <span className="text-white font-mono">${currentInstrument.high24h.toLocaleString(undefined, { minimumFractionDigits: currentInstrument.decimals })}</span></div>
+                <div>24h Low: <span className="text-white font-mono">${currentInstrument.low24h.toLocaleString(undefined, { minimumFractionDigits: currentInstrument.decimals })}</span></div>
               </div>
             </div>
 
@@ -328,12 +370,12 @@ export const BrokerSection: React.FC = () => {
           <div className="flex items-center justify-between mb-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
               <Clock className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Live Open Positions ({positions.length})</span>
+              <span>Live Open Positions ({livePositions.length})</span>
             </h4>
             <span className="text-xs text-slate-400 font-mono">
               Total Unrealized PnL:{' '}
-              <strong className="text-emerald-400">
-                +${positions.reduce((acc, p) => acc + p.pnl, 0).toFixed(2)}
+              <strong className={totalFloatingPnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}>
+                {totalFloatingPnl >= 0 ? '+' : ''}${totalFloatingPnl.toFixed(2)}
               </strong>
             </span>
           </div>
@@ -347,39 +389,47 @@ export const BrokerSection: React.FC = () => {
                   <th className="pb-2">Type</th>
                   <th className="pb-2">Lots</th>
                   <th className="pb-2">Open Price</th>
-                  <th className="pb-2">Current</th>
+                  <th className="pb-2">Live Price</th>
                   <th className="pb-2">Floating PnL</th>
                   <th className="pb-2 text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/[0.04] font-mono">
-                {positions.map((pos) => (
-                  <tr key={pos.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="py-2.5 text-slate-400 font-normal">{pos.id}</td>
-                    <td className="py-2.5 font-bold text-white">{pos.symbol}</td>
-                    <td className="py-2.5">
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                        pos.type === 'BUY' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
-                      }`}>
-                        {pos.type}
-                      </span>
-                    </td>
-                    <td className="py-2.5 text-slate-300">{pos.lots.toFixed(2)}</td>
-                    <td className="py-2.5 text-slate-300">${pos.openPrice.toLocaleString()}</td>
-                    <td className="py-2.5 text-white">${pos.currentPrice.toLocaleString()}</td>
-                    <td className="py-2.5 font-bold text-emerald-400">
-                      +${pos.pnl.toFixed(2)}
-                    </td>
-                    <td className="py-2.5 text-right">
-                      <button
-                        onClick={() => handleClosePosition(pos.id)}
-                        className="px-2.5 py-1 rounded bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 transition-colors text-[11px] cursor-pointer"
-                      >
-                        Close
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {livePositions.map((pos) => {
+                  const inst = getInstrument(pos.symbol);
+                  const decimals = inst?.decimals ?? 2;
+                  return (
+                    <tr key={pos.id} className="hover:bg-white/[0.02] transition-colors">
+                      <td className="py-2.5 text-slate-400 font-normal">{pos.id}</td>
+                      <td className="py-2.5 font-bold text-white font-sans">{pos.symbol}</td>
+                      <td className="py-2.5">
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                          pos.type === 'BUY' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                        }`}>
+                          {pos.type}
+                        </span>
+                      </td>
+                      <td className="py-2.5 text-slate-300">{pos.lots.toFixed(2)}</td>
+                      <td className="py-2.5 text-slate-300">
+                        ${pos.openPrice.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}
+                      </td>
+                      <td className="py-2.5 text-white font-bold">
+                        ${pos.currentPrice.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}
+                      </td>
+                      <td className={`py-2.5 font-bold ${pos.pnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                        {pos.pnl >= 0 ? '+' : ''}${pos.pnl.toFixed(2)}
+                      </td>
+                      <td className="py-2.5 text-right">
+                        <button
+                          onClick={() => handleClosePosition(pos.id)}
+                          className="px-2.5 py-1 rounded bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 transition-colors text-[11px] cursor-pointer"
+                        >
+                          Close
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

@@ -13,6 +13,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { EcosystemModuleId } from '../types';
+import { useLivePrices } from '../context/LivePriceContext';
 
 interface NavbarProps {
   activeSection: string;
@@ -45,15 +46,21 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'intelligence', label: 'Intelligence AI', icon: <Brain className="w-4 h-4" />, badge: 'Swarm' },
   ];
 
+  const { instruments, isLiveConnected } = useLivePrices();
+
   return (
     <>
       {/* Top Live Ticker Tape */}
       <div className="bg-[#050914]/90 backdrop-blur-md border-b border-white/[0.07] text-xs py-1.5 px-4 text-slate-300 relative z-50 overflow-hidden">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-2 shrink-0">
-            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-semibold text-[11px] border border-emerald-500/30">
+            <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full font-semibold text-[11px] border ${
+              isLiveConnected 
+                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' 
+                : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+            }`}>
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-              LIVE ECN
+              {isLiveConnected ? 'LIVE FEED (WebSocket)' : 'RECONNECTING'}
             </span>
             <span className="hidden sm:inline text-white/30">|</span>
             <span className="hidden sm:inline text-slate-300 text-[11px]">
@@ -61,37 +68,31 @@ export const Navbar: React.FC<NavbarProps> = ({
             </span>
           </div>
 
-          {/* Marquee ticker */}
+          {/* Marquee ticker with real live streaming data */}
           <div className="overflow-hidden whitespace-nowrap flex-1 mx-2 sm:mx-4">
             <div className="inline-flex items-center gap-6 animate-marquee text-[11px] font-mono">
-              <span className="inline-flex items-center gap-1.5">
-                <strong className="text-white font-sans font-semibold">EUR/USD</strong> 1.08422
-                <span className="text-emerald-400 font-medium">+0.28%</span>
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <strong className="text-white font-sans font-semibold">XAU/USD</strong> 2,642.50
-                <span className="text-emerald-400 font-medium">+1.15%</span>
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <strong className="text-white font-sans font-semibold">BTC/USD</strong> 64,820.00
-                <span className="text-emerald-400 font-medium">+2.45%</span>
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <strong className="text-white font-sans font-semibold">GBP/USD</strong> 1.29410
-                <span className="text-rose-400 font-medium">-0.14%</span>
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <strong className="text-white font-sans font-semibold">US30</strong> 42,120.0
-                <span className="text-emerald-400 font-medium">+0.42%</span>
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <strong className="text-white font-sans font-semibold">NAS100</strong> 19,885.5
-                <span className="text-emerald-400 font-medium">+0.88%</span>
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <strong className="text-white font-sans font-semibold">WTI Crude</strong> 71.85
-                <span className="text-rose-400 font-medium">-0.65%</span>
-              </span>
+              {instruments.concat(instruments).map((inst, index) => (
+                <span key={`${inst.symbol}-${index}`} className="inline-flex items-center gap-1.5">
+                  <strong className="text-white font-sans font-semibold">{inst.symbol}</strong>
+                  <span className={`transition-colors duration-300 font-bold ${
+                    inst.tickDirection === 'up' 
+                      ? 'text-emerald-400' 
+                      : inst.tickDirection === 'down' 
+                      ? 'text-rose-400' 
+                      : 'text-slate-200'
+                  }`}>
+                    {inst.bid.toLocaleString(undefined, { 
+                      minimumFractionDigits: inst.decimals, 
+                      maximumFractionDigits: inst.decimals 
+                    })}
+                  </span>
+                  <span className={`text-[10px] font-medium ${
+                    inst.change24h >= 0 ? 'text-emerald-400' : 'text-rose-400'
+                  }`}>
+                    {inst.change24h >= 0 ? '+' : ''}{inst.change24h}%
+                  </span>
+                </span>
+              ))}
             </div>
           </div>
 

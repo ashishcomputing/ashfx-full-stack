@@ -35,6 +35,8 @@ export interface Instrument {
   low24h: number;
   leverage: string;
   decimals: number;
+  tickDirection?: 'up' | 'down' | 'same';
+  lastUpdated?: number;
 }
 
 export interface Position {

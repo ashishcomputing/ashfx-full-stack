@@ -3,8 +3,8 @@ import { JarvisTelemetry, JarvisAlert, JarvisMessage } from '../types';
 export const initialJarvisTelemetry: JarvisTelemetry = {
   status: 'ACTIVE_MONITORING',
   detectedPatterns: [
-    'Liquidity Pool Sweep (Asian Low @ 2624.10)',
-    'Bullish FVG Displacement (M15 Void)',
+    'Liquidity Pool Sweep (Asian Low @ 4315.00)',
+    'Bullish FVG Displacement (M15 Void 4324-4328)',
     'Order Block Mitigation (Active)',
     'SMT Divergence (EUR vs DXY)'
   ],
@@ -21,7 +21,7 @@ export const jarvisAlerts: JarvisAlert[] = [
     timestamp: '11:41 AM',
     priority: 'CRITICAL',
     title: 'Institutional Liquidity Raid Complete',
-    description: 'Gold cleanly swept 2624.10 liquidity with swift 14-point displacement. High probability OTE long setup forming.',
+    description: 'Gold cleanly swept 4315.00 liquidity with swift 21-point displacement. High probability OTE long setup forming above 4330.',
     pair: 'XAU/USD',
   },
   {
@@ -29,7 +29,7 @@ export const jarvisAlerts: JarvisAlert[] = [
     timestamp: '11:28 AM',
     priority: 'HIGH',
     title: 'SMT Divergence Confirmed',
-    description: 'EUR/USD made higher low while DXY failed to create lower low. Bearish exhaustion on US Dollar.',
+    description: 'EUR/USD made higher low at 1.1432 while DXY failed to create lower low. Bearish exhaustion on US Dollar.',
     pair: 'EUR/USD',
   },
   {
@@ -46,7 +46,7 @@ export const initialJarvisMessages: JarvisMessage[] = [
   {
     id: 'MSG-1',
     sender: 'jarvis',
-    text: "Greetings. ASHFX Jarvis AI is online and actively tracking your terminal screen at 60 FPS. I have verified 3 institutional setups across Gold, Euro, and Bitcoin. What would you like me to analyze?",
+    text: "Greetings. ASHFX Jarvis AI is online and actively tracking your terminal screen at 60 FPS. I have verified 3 institutional setups across Gold ($4,336.30), Euro (1.14710), and Bitcoin ($85,604). What would you like me to analyze?",
     timestamp: '11:30 AM',
     suggestions: [
       'Audit current risk & open positions',
@@ -64,11 +64,11 @@ export const initialJarvisMessages: JarvisMessage[] = [
   {
     id: 'MSG-3',
     sender: 'jarvis',
-    text: "Analyzing your open XAU/USD position: You entered at 2,634.20 with 2.0 lots. Current price is 2,642.50 (+8.3 points, +$1,660.00 PnL). I recommend moving your stop to 2,638.00 (locking in +$760.00 profit) as price is approaching the 2,645.00 daily liquidity pool.",
+    text: "Analyzing your open XAU/USD position: You entered at 4,324.20 with 2.0 lots. Current live price is 4,336.30 (+12.1 points, +$2,420.00 PnL). I recommend moving your stop to 4,330.00 (locking in +$1,160.00 profit) as price is approaching the 4,350.00 daily liquidity pool.",
     timestamp: '11:32 AM',
     metadata: {
       confidence: 97.8,
-      recommendedAction: 'Trail Stop to 2,638.00',
+      recommendedAction: 'Trail Stop to 4,330.00',
       chartCoords: 'X: 1420, Y: 890 (M15 Breakout)',
     },
     suggestions: [
