@@ -18,6 +18,7 @@ import { IndicatorsSection } from './sections/IndicatorsSection';
 import { Mt5EaSection } from './sections/Mt5EaSection';
 import { JarvisAiSection } from './sections/JarvisAiSection';
 import { IntelligenceAiSection } from './sections/IntelligenceAiSection';
+import { Logo } from './Logo';
 
 interface FullAppModalProps {
   isOpen: boolean;
@@ -48,24 +49,7 @@ export const FullAppModal: React.FC<FullAppModalProps> = ({
       <div className="liquid-glass-card w-full max-w-6xl max-h-[92vh] flex flex-col border border-white/15 shadow-[0_25px_70px_rgba(0,0,0,0.8)] overflow-hidden">
         {/* Modal Top Bar */}
         <div className="px-4 sm:px-6 py-3.5 border-b border-white/10 flex items-center justify-between bg-[#070b1a]/90">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-cyan-400 to-blue-600 p-0.5 shadow-md">
-              <div className="w-full h-full bg-[#070b1a] rounded-[10px] flex items-center justify-center font-bold text-xs text-white">
-                <span className="text-cyan-400">A</span>FX
-              </div>
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-extrabold text-white">ASHFX FULL STACK</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
-                  INTERACTIVE SUITE
-                </span>
-              </div>
-              <span className="text-[10px] text-slate-400 hidden sm:block">
-                Direct Operational Cockpit • Zero Latency Sandbox
-              </span>
-            </div>
-          </div>
+          <Logo size="sm" badgeText="INTERACTIVE SUITE" />
 
           {/* Module Switcher Tabs (Desktop) */}
           <div className="hidden md:flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/10">

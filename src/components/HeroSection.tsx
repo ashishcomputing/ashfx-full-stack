@@ -13,6 +13,7 @@ import {
   Layers
 } from 'lucide-react';
 import { EcosystemModuleId } from '../types';
+import { Logo } from './Logo';
 
 interface HeroSectionProps {
   onNavigate: (sectionId: string) => void;
@@ -104,10 +105,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
       {/* Main Title & Subtitle */}
       <div className="text-center max-w-4xl mx-auto mb-12">
-        <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-white mb-6 leading-[1.1]">
-          ASHFX{' '}
-          <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent drop-shadow-[0_0_35px_rgba(0,242,254,0.3)]">
-            FULL STACK
+        <div className="flex justify-center mb-6">
+          <Logo size="xl" badgeText="FULL STACK v1.0" />
+        </div>
+        <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-white mb-6 leading-[1.15]">
+          The Unified Autonomous{' '}
+          <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent drop-shadow-[0_0_35px_rgba(0,242,254,0.35)]">
+            Liquid Glass Ecosystem
           </span>
         </h1>
         <p className="text-base sm:text-lg md:text-xl text-slate-300 leading-relaxed font-normal max-w-3xl mx-auto">

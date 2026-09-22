@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { EcosystemModuleId } from '../types';
 import { useLivePrices } from '../context/LivePriceContext';
+import { Logo } from './Logo';
 
 interface NavbarProps {
   activeSection: string;
@@ -114,27 +115,12 @@ export const Navbar: React.FC<NavbarProps> = ({
         }`}
       >
         <div className="max-w-7xl mx-auto liquid-glass rounded-2xl px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between shadow-[0_12px_36px_rgba(0,0,0,0.5)] border border-white/10">
-          {/* Logo */}
+          {/* Official ASHFX Logo with Liquid Glow */}
           <button 
             onClick={() => onNavigate('hero')}
-            className="flex items-center gap-3 group text-left cursor-pointer focus:outline-none"
+            className="flex items-center text-left cursor-pointer focus:outline-none"
           >
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#00f2fe] via-[#4facfe] to-[#0072ff] p-0.5 shadow-[0_0_20px_rgba(0,242,254,0.4)] group-hover:shadow-[0_0_28px_rgba(0,242,254,0.7)] transition-all">
-              <div className="w-full h-full bg-[#070b1a] rounded-[10px] flex items-center justify-center font-bold text-base text-white tracking-wider">
-                <span className="text-[#00f2fe]">A</span>FX
-              </div>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-base sm:text-lg font-black tracking-tight text-white flex items-center gap-1.5">
-                ASHFX
-                <span className="text-[10px] font-bold tracking-widest uppercase px-1.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
-                  FULL STACK
-                </span>
-              </span>
-              <span className="text-[9.5px] tracking-wider uppercase text-slate-400 font-medium hidden sm:inline">
-                Unified Liquid Glass Ecosystem
-              </span>
-            </div>
+            <Logo size="md" badgeText="FULL STACK" />
           </button>
 
           {/* Desktop Nav Items */}

@@ -11,6 +11,8 @@ import {
   ExternalLink
 } from 'lucide-react';
 
+import { Logo } from './Logo';
+
 interface FooterProps {
   onNavigate: (sectionId: string) => void;
 }
@@ -26,15 +28,8 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
           {/* Col 1: Brand (2 cols) */}
           <div className="lg:col-span-2">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-400 to-blue-600 p-0.5 shadow-[0_0_20px_rgba(0,242,254,0.4)]">
-                <div className="w-full h-full bg-[#070b1a] rounded-[10px] flex items-center justify-center font-bold text-base text-white">
-                  <span className="text-cyan-400">A</span>FX
-                </div>
-              </div>
-              <span className="text-lg font-extrabold text-white tracking-tight">
-                ASHFX <span className="text-cyan-400 font-mono text-sm">FULL STACK</span>
-              </span>
+            <div className="mb-4">
+              <Logo size="lg" badgeText="FULL STACK" />
             </div>
             <p className="text-slate-400 text-xs leading-relaxed max-w-sm mb-4">
               The unified next-generation quantitative ecosystem. Bringing together institutional multi-asset brokerage, liquid glass behavioral journaling, conflux FSM algorithms, zero-latency MT5 EA bridging, screen-aware Jarvis vision, and multi-agent adversarial research swarms.
