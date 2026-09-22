@@ -5,6 +5,14 @@
 
 ---
 
+## 🌐 Live Deployments & Repository
+
+- **GitHub Repository**: [https://github.com/ashishcomputing/ashfx-full-stack](https://github.com/ashishcomputing/ashfx-full-stack)
+- **Vercel Production (Live)**: [https://ashfx-full-stack.vercel.app](https://ashfx-full-stack.vercel.app)
+- **Netlify Production (Live)**: [https://ashfx-full-stack-app.netlify.app](https://ashfx-full-stack-app.netlify.app)
+
+---
+
 ## ⚡ Quick Start
 
 ```bash
