@@ -48,13 +48,13 @@ export const Mt5EaSection: React.FC = () => {
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold mb-3">
             <Cpu className="w-3.5 h-3.5" />
-            <span>MODULE 04 • METATRADER 5 EA & IPC BRIDGE</span>
+            <span>PRODUCT 04 • MT5 HIGH-FREQUENCY EA & IPC BRIDGE</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Institutional MQL5 Bridge & Execution Core
+            Sub-Millisecond ZeroMQ Execution Bridge for MT5
           </h2>
           <p className="text-slate-400 text-sm sm:text-base mt-1 max-w-2xl">
-            Sub-millisecond IPC communication via ZeroMQ & Windows Named Pipes, linking Python Quant AI directly into MetaTrader 5 terminal.
+            0.42ms roundtrip Inter-Process Communication (IPC) linking Python Quantitative AI directly into MetaTrader 5 Build 4450+ terminals with automated slippage caps.
           </p>
         </div>
 

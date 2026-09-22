@@ -83,13 +83,13 @@ export const JarvisAiSection: React.FC = () => {
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-300 text-xs font-semibold mb-3">
             <Bot className="w-3.5 h-3.5" />
-            <span>MODULE 05 • SCREEN-AWARE DESKTOP CO-PILOT</span>
+            <span>PRODUCT 05 • SCREEN-AWARE DESKTOP VISION CO-PILOT</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            ASHFX Jarvis Multimodal AI
+            ASHFX Jarvis 60 FPS Multimodal AI Co-Pilot
           </h2>
           <p className="text-slate-400 text-sm sm:text-base mt-1 max-w-2xl">
-            Real-time computer vision scans your desktop trading screen at 60 FPS, recognizing institutional setups, fair value gaps, and liquidity sweeps instantly.
+            Real-time desktop computer vision scans your charts at 60 FPS, recognizing institutional market structure, fair value gaps, and liquidity sweeps with zero manual charting.
           </p>
         </div>
 

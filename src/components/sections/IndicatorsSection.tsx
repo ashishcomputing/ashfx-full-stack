@@ -32,13 +32,13 @@ export const IndicatorsSection: React.FC = () => {
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-semibold mb-3">
             <Activity className="w-3.5 h-3.5" />
-            <span>MODULE 03 • CONFLUX QUANT INDICATORS</span>
+            <span>PRODUCT 03 • CONFLUX QUANT FSM RADAR</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Institutional Order Flow & FSM Radar
+            Mathematical 5-Stage FSM Order Flow Engine
           </h2>
           <p className="text-slate-400 text-sm sm:text-base mt-1 max-w-2xl">
-            Autonomous 5-stage setup detection: Liquidity sweeps, Fair Value Gaps (FVG), Market Structure Shifts, and Optimal Trade Entry (OTE).
+            Autonomous algorithmic setup detection: Institutional Liquidity Sweeps, Market Structure Shifts (MSS), Fair Value Gap (FVG) mitigations, and Optimal Trade Entry (OTE 0.705).
           </p>
         </div>
 

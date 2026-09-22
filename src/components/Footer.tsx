@@ -29,51 +29,51 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           {/* Col 1: Brand (2 cols) */}
           <div className="lg:col-span-2">
             <div className="mb-4">
-              <Logo size="lg" badgeText="FULL STACK" />
+              <Logo size="lg" badgeText="QUANT FIRM" />
             </div>
             <p className="text-slate-400 text-xs leading-relaxed max-w-sm mb-4">
-              The unified next-generation quantitative ecosystem. Bringing together institutional multi-asset brokerage, liquid glass behavioral journaling, conflux FSM algorithms, zero-latency MT5 EA bridging, screen-aware Jarvis vision, and multi-agent adversarial research swarms.
+              ASHFX is an elite quantitative trading and technology firm. We engineer high-frequency algorithmic infrastructure, mathematical order flow engines, behavioral AI risk models, and autonomous multi-agent consensus swarms for institutional funds and professional traders worldwide.
             </p>
             <div className="flex items-center gap-2 text-[11px] text-emerald-400 font-mono">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              All 6 Core Systems Operational • LD4 London Datacenter
+              All 6 Institutional Products Operational • LD4 London Datacenter
             </div>
           </div>
 
-          {/* Col 2: Ecosystem Modules */}
+          {/* Col 2: Ecosystem Products */}
           <div>
             <h4 className="text-xs font-bold uppercase tracking-wider text-white mb-3">
-              Core Modules
+              Trading Products
             </h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <button onClick={() => onNavigate('broker')} className="hover:text-cyan-300 transition-colors">
-                  ASHFX Broker (ECN 0.0)
+                <button onClick={() => onNavigate('broker')} className="hover:text-cyan-300 transition-colors text-left">
+                  P-01: ECN Prime Brokerage
                 </button>
               </li>
               <li>
-                <button onClick={() => onNavigate('journal')} className="hover:text-purple-300 transition-colors">
-                  Liquid Glass Journal
+                <button onClick={() => onNavigate('journal')} className="hover:text-purple-300 transition-colors text-left">
+                  P-02: Quant Journal & Risk AI
                 </button>
               </li>
               <li>
-                <button onClick={() => onNavigate('indicators')} className="hover:text-emerald-300 transition-colors">
-                  Conflux Quant Matrix
+                <button onClick={() => onNavigate('indicators')} className="hover:text-emerald-300 transition-colors text-left">
+                  P-03: Conflux FSM Matrix
                 </button>
               </li>
               <li>
-                <button onClick={() => onNavigate('mt5')} className="hover:text-amber-300 transition-colors">
-                  MT5 EA & IPC Bridge
+                <button onClick={() => onNavigate('mt5')} className="hover:text-amber-300 transition-colors text-left">
+                  P-04: MT5 IPC Execution Core
                 </button>
               </li>
               <li>
-                <button onClick={() => onNavigate('jarvis')} className="hover:text-blue-300 transition-colors">
-                  Jarvis Multimodal AI
+                <button onClick={() => onNavigate('jarvis')} className="hover:text-blue-300 transition-colors text-left">
+                  P-05: Jarvis Vision Co-Pilot
                 </button>
               </li>
               <li>
-                <button onClick={() => onNavigate('intelligence')} className="hover:text-rose-300 transition-colors">
-                  Intelligence Swarm Desk
+                <button onClick={() => onNavigate('intelligence')} className="hover:text-rose-300 transition-colors text-left">
+                  P-06: Swarm Intelligence Desk
                 </button>
               </li>
             </ul>

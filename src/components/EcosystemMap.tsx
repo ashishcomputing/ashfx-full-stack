@@ -23,8 +23,9 @@ export const EcosystemMap: React.FC<EcosystemMapProps> = ({ onNavigate }) => {
     {
       step: '01',
       title: 'Swarm Intelligence',
-      subtitle: 'Macro & Sentiment Debate',
-      tech: '5 LLM Agents • Adversarial Check',
+      productCode: 'PRODUCT 06',
+      subtitle: 'Adversarial Quantitative Debate',
+      tech: '5 LLM Quant Agents • Macro & Risk Consensus',
       id: 'intelligence',
       icon: <Brain className="w-5 h-5 text-rose-400" />,
       color: 'border-rose-500/30 text-rose-400 bg-rose-500/10',
@@ -32,8 +33,9 @@ export const EcosystemMap: React.FC<EcosystemMapProps> = ({ onNavigate }) => {
     {
       step: '02',
       title: 'Conflux Quant Engine',
-      subtitle: 'FSM & POI Registry',
-      tech: 'Sweep • MSS • FVG • OTE 0.705',
+      productCode: 'PRODUCT 03',
+      subtitle: '5-Stage FSM & Order Flow Radar',
+      tech: 'Sweep • MSS • FVG • OTE 0.705 Matrix',
       id: 'indicators',
       icon: <Activity className="w-5 h-5 text-emerald-400" />,
       color: 'border-emerald-500/30 text-emerald-400 bg-emerald-500/10',
@@ -41,8 +43,9 @@ export const EcosystemMap: React.FC<EcosystemMapProps> = ({ onNavigate }) => {
     {
       step: '03',
       title: 'Jarvis Desktop Vision',
-      subtitle: 'Multimodal Screen AI',
-      tech: '60 FPS Scan • Voice HUD',
+      productCode: 'PRODUCT 05',
+      subtitle: 'Multimodal Screen AI & HUD',
+      tech: '60 FPS Chart Vision • Real-Time Voice Audio',
       id: 'jarvis',
       icon: <Bot className="w-5 h-5 text-blue-400" />,
       color: 'border-blue-500/30 text-blue-400 bg-blue-500/10',
@@ -50,26 +53,29 @@ export const EcosystemMap: React.FC<EcosystemMapProps> = ({ onNavigate }) => {
     {
       step: '04',
       title: 'MT5 EA Bridge Core',
-      subtitle: 'ZeroMQ IPC Protocol',
-      tech: '0.42ms Socket • Build 4450',
+      productCode: 'PRODUCT 04',
+      subtitle: 'ZeroMQ High-Frequency IPC',
+      tech: '0.42ms Socket • MetaTrader 5 Build 4450+',
       id: 'mt5',
       icon: <Cpu className="w-5 h-5 text-amber-400" />,
       color: 'border-amber-500/30 text-amber-400 bg-amber-500/10',
     },
     {
       step: '05',
-      title: 'Institutional Broker',
-      subtitle: 'ECN Multi-Asset Engine',
-      tech: '11.8ms Fill • 0.0 Raw Spread',
+      title: 'ECN Prime Brokerage',
+      productCode: 'PRODUCT 01',
+      subtitle: 'Tier-1 Bank Liquidity Aggregation',
+      tech: '11.8ms Fill • 0.0 Raw Spread • Zero Requotes',
       id: 'broker',
       icon: <BarChart3 className="w-5 h-5 text-cyan-400" />,
       color: 'border-cyan-500/30 text-cyan-400 bg-cyan-500/10',
     },
     {
       step: '06',
-      title: 'Smart Liquid Journal',
-      subtitle: 'Behavioral & Equity AI',
-      tech: 'Tilt Audit • 68.4% Win Rate',
+      title: 'Quant Journal & Risk AI',
+      productCode: 'PRODUCT 02',
+      subtitle: 'Behavioral & Equity Telemetry',
+      tech: 'Tilt Lockout • Monte Carlo • 2.42 PF',
       id: 'journal',
       icon: <BookOpen className="w-5 h-5 text-purple-400" />,
       color: 'border-purple-500/30 text-purple-400 bg-purple-500/10',
@@ -82,13 +88,13 @@ export const EcosystemMap: React.FC<EcosystemMapProps> = ({ onNavigate }) => {
       <div className="text-center max-w-3xl mx-auto mb-12">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-semibold mb-3">
           <Layers className="w-3.5 h-3.5" />
-          <span>FULL STACK PIPELINE</span>
+          <span>INSTITUTIONAL QUANT PIPELINE</span>
         </div>
         <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-          How All 6 Systems Interlink
+          How All 6 Quant Products Execute in Sync
         </h2>
         <p className="text-slate-400 text-sm sm:text-base mt-2">
-          From multi-agent adversarial debate down to sub-millisecond MT5 execution and post-trade behavioral AI review.
+          From multi-agent adversarial debate and mathematical order flow down to sub-millisecond MT5 execution and post-trade behavioral risk audits.
         </p>
       </div>
 

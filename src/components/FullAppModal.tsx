@@ -36,12 +36,12 @@ export const FullAppModal: React.FC<FullAppModalProps> = ({
   if (!isOpen) return null;
 
   const tabs: { id: EcosystemModuleId; label: string; icon: React.ReactNode }[] = [
-    { id: 'broker', label: 'Broker Terminal', icon: <BarChart3 className="w-4 h-4" /> },
-    { id: 'journal', label: 'Liquid Journal', icon: <BookOpen className="w-4 h-4" /> },
-    { id: 'indicators', label: 'Quant Indicators', icon: <Activity className="w-4 h-4" /> },
-    { id: 'mt5', label: 'MT5 EA Bridge', icon: <Cpu className="w-4 h-4" /> },
-    { id: 'jarvis', label: 'Jarvis Co-pilot', icon: <Bot className="w-4 h-4" /> },
-    { id: 'intelligence', label: 'Intelligence Swarm', icon: <Brain className="w-4 h-4" /> },
+    { id: 'broker', label: 'P-01 Broker', icon: <BarChart3 className="w-4 h-4" /> },
+    { id: 'journal', label: 'P-02 Journal', icon: <BookOpen className="w-4 h-4" /> },
+    { id: 'indicators', label: 'P-03 Indicators', icon: <Activity className="w-4 h-4" /> },
+    { id: 'mt5', label: 'P-04 MT5 EA', icon: <Cpu className="w-4 h-4" /> },
+    { id: 'jarvis', label: 'P-05 Jarvis AI', icon: <Bot className="w-4 h-4" /> },
+    { id: 'intelligence', label: 'P-06 Swarm Desk', icon: <Brain className="w-4 h-4" /> },
   ];
 
   return (
@@ -49,7 +49,7 @@ export const FullAppModal: React.FC<FullAppModalProps> = ({
       <div className="liquid-glass-card w-full max-w-6xl max-h-[92vh] flex flex-col border border-white/15 shadow-[0_25px_70px_rgba(0,0,0,0.8)] overflow-hidden">
         {/* Modal Top Bar */}
         <div className="px-4 sm:px-6 py-3.5 border-b border-white/10 flex items-center justify-between bg-[#070b1a]/90">
-          <Logo size="sm" badgeText="INTERACTIVE SUITE" />
+          <Logo size="sm" badgeText="QUANT SUITE" />
 
           {/* Module Switcher Tabs (Desktop) */}
           <div className="hidden md:flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/10">

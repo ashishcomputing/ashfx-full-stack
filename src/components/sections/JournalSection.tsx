@@ -79,13 +79,13 @@ export const JournalSection: React.FC = () => {
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-semibold mb-3">
             <BookOpen className="w-3.5 h-3.5" />
-            <span>MODULE 02 • SMART LIQUID JOURNAL</span>
+            <span>PRODUCT 02 • QUANT JOURNAL & BEHAVIORAL RISK ENGINE</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Behavioral AI & Quantitative Analytics
+            Automated Trade Telemetry & Behavioral Risk AI
           </h2>
           <p className="text-slate-400 text-sm sm:text-base mt-1 max-w-2xl">
-            Real-time equity curves, psychometric tilt auditing, and session attribution powered by liquid glass.
+            Institutional equity attribution, psychometric tilt lockout, Monte Carlo drawdown modeling, and automated session performance telemetry.
           </p>
         </div>
 

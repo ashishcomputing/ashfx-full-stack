@@ -38,13 +38,13 @@ export const Navbar: React.FC<NavbarProps> = ({
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navItems: { id: EcosystemModuleId; label: string; icon: React.ReactNode; badge?: string }[] = [
-    { id: 'broker', label: 'Broker', icon: <BarChart3 className="w-4 h-4" /> },
-    { id: 'journal', label: 'Journal', icon: <BookOpen className="w-4 h-4" /> },
-    { id: 'indicators', label: 'Indicators', icon: <Activity className="w-4 h-4" /> },
-    { id: 'mt5', label: 'MT5 EA', icon: <Cpu className="w-4 h-4" /> },
-    { id: 'jarvis', label: 'Jarvis AI', icon: <Bot className="w-4 h-4" /> },
-    { id: 'intelligence', label: 'Intelligence AI', icon: <Brain className="w-4 h-4" />, badge: 'Swarm' },
+  const navItems: { id: EcosystemModuleId; label: string; productNum: string; icon: React.ReactNode; badge?: string }[] = [
+    { id: 'broker', label: 'ECN Broker', productNum: 'P-01', icon: <BarChart3 className="w-4 h-4" /> },
+    { id: 'journal', label: 'Quant Journal', productNum: 'P-02', icon: <BookOpen className="w-4 h-4" /> },
+    { id: 'indicators', label: 'Conflux Matrix', productNum: 'P-03', icon: <Activity className="w-4 h-4" /> },
+    { id: 'mt5', label: 'MT5 IPC EA', productNum: 'P-04', icon: <Cpu className="w-4 h-4" /> },
+    { id: 'jarvis', label: 'Jarvis Vision', productNum: 'P-05', icon: <Bot className="w-4 h-4" /> },
+    { id: 'intelligence', label: 'Swarm AI', productNum: 'P-06', icon: <Brain className="w-4 h-4" />, badge: 'Swarm' },
   ];
 
   const { instruments, isLiveConnected } = useLivePrices();
@@ -65,7 +65,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </span>
             <span className="hidden sm:inline text-white/30">|</span>
             <span className="hidden sm:inline text-slate-300 text-[11px]">
-              Avg Execution: <strong className="text-white font-mono">11.8ms</strong>
+              Quant Fill Latency: <strong className="text-white font-mono">11.8ms</strong>
             </span>
           </div>
 
@@ -120,7 +120,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => onNavigate('hero')}
             className="flex items-center text-left cursor-pointer focus:outline-none"
           >
-            <Logo size="md" badgeText="FULL STACK" />
+            <Logo size="md" badgeText="QUANT FIRM" />
           </button>
 
           {/* Desktop Nav Items */}
@@ -137,6 +137,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       : 'text-slate-300 hover:text-white hover:bg-white/[0.06] border border-transparent'
                   }`}
                 >
+                  <span className="text-[10px] font-mono font-bold text-cyan-400/80">{item.productNum}</span>
                   <span className={isActive ? 'text-cyan-400' : 'text-slate-400'}>{item.icon}</span>
                   <span>{item.label}</span>
                   {item.badge && (

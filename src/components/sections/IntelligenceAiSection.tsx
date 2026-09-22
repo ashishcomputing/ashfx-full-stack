@@ -51,13 +51,13 @@ export const IntelligenceAiSection: React.FC = () => {
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-semibold mb-3">
             <Brain className="w-3.5 h-3.5" />
-            <span>MODULE 06 • AUTONOMOUS MULTI-AGENT SWARM</span>
+            <span>PRODUCT 06 • AUTONOMOUS MULTI-AGENT SWARM DESK</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Institutional Intelligence Debate Desk
+            Institutional Quantitative Intelligence Swarm
           </h2>
           <p className="text-slate-400 text-sm sm:text-base mt-1 max-w-2xl">
-            5 specialized LLM agents engage in adversarial research debate to stress-test setups before a single dollar is risked.
+            5 specialized LLM quant agents engage in adversarial research debate (Macro, Quant Tech, Stat-Arb, Risk Gatekeeper, Execution Router) to stress-test setups before capital allocation.
           </p>
         </div>
 

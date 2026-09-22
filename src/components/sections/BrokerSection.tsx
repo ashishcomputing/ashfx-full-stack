@@ -108,13 +108,13 @@ export const BrokerSection: React.FC = () => {
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-semibold mb-3">
             <BarChart3 className="w-3.5 h-3.5" />
-            <span>MODULE 01 • MULTI-ASSET BROKER</span>
+            <span>PRODUCT 01 • RAW 0.0 ECN PRIME BROKERAGE</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Institutional ECN Trading Platform
+            Institutional ECN Prime Brokerage Platform
           </h2>
           <p className="text-slate-400 text-sm sm:text-base mt-1 max-w-2xl">
-            600+ instruments with raw 0.0 pip spreads, lightning 11.8ms execution, and 1:2000 dynamic leverage.
+            Direct Tier-1 bank liquidity aggregation with raw 0.0 pip spreads, ultra-low 11.8ms execution, zero requotes, and institutional market depth across 600+ instruments.
           </p>
         </div>
 
