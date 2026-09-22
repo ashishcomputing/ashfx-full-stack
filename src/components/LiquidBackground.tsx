@@ -1,27 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 
-interface Ripple {
+interface Candle {
   x: number;
-  y: number;
-  r: number;
-  maxR: number;
-  opacity: number;
-  color: string;
-}
-
-interface GlassBubble {
-  x: number;
-  y: number;
-  r: number;
-  baseR: number;
-  vx: number;
-  vy: number;
-  wobbleSpeed: number;
-  wobblePhase: number;
-  wobbleAmp: number;
-  opacity: number;
-  colorTheme: 'cyan' | 'purple' | 'emerald' | 'prismatic';
-  specularAngle: number;
+  open: number;
+  close: number;
+  high: number;
+  low: number;
+  volume: number;
+  isBullish: boolean;
 }
 
 export const LiquidBackground: React.FC = () => {
@@ -38,66 +24,44 @@ export const LiquidBackground: React.FC = () => {
     let width = (canvas.width = window.innerWidth);
     let height = (canvas.height = window.innerHeight);
 
-    // Mouse tracking with spring interpolation
+    // Mouse coordinates for quant crosshair & subtle spotlight
     const mouse = {
-      targetX: width / 2,
-      targetY: height / 2,
-      x: width / 2,
-      y: height / 2,
-      vx: 0,
-      vy: 0,
-      speed: 0,
-      isMoving: false,
+      x: -1000,
+      y: -1000,
+      targetX: -1000,
+      targetY: -1000,
+      active: false,
     };
 
-    let lastMouseX = width / 2;
-    let lastMouseY = height / 2;
-    let lastMoveTime = performance.now();
-    let ripples: Ripple[] = [];
-    let lastRippleTime = 0;
-    let lastBubbleSpawnTime = 0;
+    // Generate initial procedural candlestick series
+    const candleWidth = 9;
+    const candleSpacing = 16;
+    const candleCount = Math.ceil(width / candleSpacing) + 30;
+    
+    let basePrice = 85200;
+    const candles: Candle[] = [];
 
-    // Initialize fleet of multi-sized Windows theme glass bubbles across the entire viewport
-    const bubbles: GlassBubble[] = [];
-    const bubbleCount = Math.min(38, Math.floor((width * height) / 38000));
-    const sizeTiers = [
-      { min: 7, max: 14, weight: 0.35 },    // Tiny
-      { min: 18, max: 28, weight: 0.30 },   // Small
-      { min: 35, max: 54, weight: 0.20 },   // Medium
-      { min: 65, max: 96, weight: 0.12 },   // Large
-      { min: 110, max: 145, weight: 0.03 }, // Giant
-    ];
+    // Pre-populate realistic price action
+    for (let i = 0; i < candleCount; i++) {
+      const delta = (Math.random() - 0.48) * 85;
+      const open = basePrice;
+      const close = open + delta;
+      const high = Math.max(open, close) + Math.random() * 45;
+      const low = Math.min(open, close) - Math.random() * 45;
+      const volume = 20 + Math.random() * 80;
+      const isBullish = close >= open;
 
-    const pickSize = () => {
-      const rand = Math.random();
-      let cumulative = 0;
-      for (const tier of sizeTiers) {
-        cumulative += tier.weight;
-        if (rand <= cumulative) {
-          return tier.min + Math.random() * (tier.max - tier.min);
-        }
-      }
-      return 24;
-    };
-
-    const themes: ('cyan' | 'purple' | 'emerald' | 'prismatic')[] = ['cyan', 'purple', 'emerald', 'prismatic'];
-
-    for (let i = 0; i < bubbleCount; i++) {
-      const r = pickSize();
-      bubbles.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        r,
-        baseR: r,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: -(0.35 + Math.random() * 0.85), // natural upward float
-        wobbleSpeed: 0.015 + Math.random() * 0.025,
-        wobblePhase: Math.random() * Math.PI * 2,
-        wobbleAmp: 0.4 + Math.random() * 0.8,
-        opacity: 0.55 + Math.random() * 0.35,
-        colorTheme: themes[Math.floor(Math.random() * themes.length)],
-        specularAngle: Math.PI * 1.25, // top-left highlight
+      candles.push({
+        x: i * candleSpacing,
+        open,
+        close,
+        high,
+        low,
+        volume,
+        isBullish,
       });
+
+      basePrice = close;
     }
 
     const handleResize = () => {
@@ -107,304 +71,223 @@ export const LiquidBackground: React.FC = () => {
     };
 
     const handleMouseMove = (e: MouseEvent) => {
-      const now = performance.now();
-      const dt = Math.max(1, now - lastMoveTime);
-      lastMoveTime = now;
-
-      const dist = Math.hypot(e.clientX - lastMouseX, e.clientY - lastMouseY);
-      mouse.speed = dist / dt;
       mouse.targetX = e.clientX;
       mouse.targetY = e.clientY;
-      mouse.isMoving = true;
+      mouse.active = true;
 
-      // Update cursor follower spotlight position
       if (spotlightRef.current) {
         spotlightRef.current.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
         spotlightRef.current.style.opacity = '1';
       }
-
-      // 1. Spawn liquid ripples on fluid motion
-      if (now - lastRippleTime > 55 && dist > 14 && ripples.length < 30) {
-        lastRippleTime = now;
-        const colors = [
-          'rgba(0, 242, 254, ',
-          'rgba(79, 172, 254, ',
-          'rgba(168, 85, 247, ',
-          'rgba(0, 245, 160, ',
-        ];
-        const chosenColor = colors[Math.floor(Math.random() * colors.length)];
-
-        ripples.push({
-          x: e.clientX,
-          y: e.clientY,
-          r: 6,
-          maxR: 85 + Math.random() * 55,
-          opacity: 0.4,
-          color: chosenColor,
-        });
-      }
-
-      // 2. High-speed mouse trail creates rising micro-bubbles
-      if (dist > 30 && now - lastBubbleSpawnTime > 80 && bubbles.length < 55) {
-        lastBubbleSpawnTime = now;
-        const r = 5 + Math.random() * 9;
-        bubbles.push({
-          x: e.clientX + (Math.random() - 0.5) * 20,
-          y: e.clientY + (Math.random() - 0.5) * 20,
-          r,
-          baseR: r,
-          vx: (Math.random() - 0.5) * 0.8,
-          vy: -(0.9 + Math.random() * 1.4),
-          wobbleSpeed: 0.04 + Math.random() * 0.04,
-          wobblePhase: Math.random() * Math.PI * 2,
-          wobbleAmp: 0.8,
-          opacity: 0.85,
-          colorTheme: themes[Math.floor(Math.random() * themes.length)],
-          specularAngle: Math.PI * 1.25,
-        });
-      }
-
-      lastMouseX = e.clientX;
-      lastMouseY = e.clientY;
     };
 
-    const handleClick = (e: MouseEvent) => {
-      // 1. Concentrated droplet splash waves
-      for (let i = 0; i < 3; i++) {
-        ripples.push({
-          x: e.clientX,
-          y: e.clientY,
-          r: 5 + i * 15,
-          maxR: 180 + i * 40,
-          opacity: 0.55 - i * 0.1,
-          color: i === 0 ? 'rgba(0, 242, 254, ' : i === 1 ? 'rgba(168, 85, 247, ' : 'rgba(0, 245, 160, ',
-        });
-      }
-
-      // 2. Click bursts a fountain of multi-sized Windows bubbles
-      const burstCount = 6 + Math.floor(Math.random() * 5);
-      for (let i = 0; i < burstCount; i++) {
-        const r = pickSize();
-        const angle = Math.random() * Math.PI * 2;
-        const speed = 1.5 + Math.random() * 3.5;
-        bubbles.push({
-          x: e.clientX + Math.cos(angle) * 15,
-          y: e.clientY + Math.sin(angle) * 15,
-          r,
-          baseR: r,
-          vx: Math.cos(angle) * speed,
-          vy: Math.sin(angle) * speed - 1.5, // bias upwards
-          wobbleSpeed: 0.03 + Math.random() * 0.04,
-          wobblePhase: Math.random() * Math.PI * 2,
-          wobbleAmp: 1.0,
-          opacity: 0.9,
-          colorTheme: themes[Math.floor(Math.random() * themes.length)],
-          specularAngle: Math.PI * 1.25,
-        });
+    const handleMouseLeave = () => {
+      mouse.active = false;
+      if (spotlightRef.current) {
+        spotlightRef.current.style.opacity = '0';
       }
     };
 
     window.addEventListener('resize', handleResize);
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    window.addEventListener('click', handleClick);
-
-    // Liquid glowing blobs with viscosity
-    const blobs = [
-      { x: width * 0.2, y: height * 0.25, baseR: 280, r: 280, dx: 0.3, dy: 0.2, color: 'rgba(0, 242, 254, 0.12)', pullWeight: 0.012 },
-      { x: width * 0.8, y: height * 0.35, baseR: 340, r: 340, dx: -0.25, dy: 0.25, color: 'rgba(168, 85, 247, 0.10)', pullWeight: 0.01 },
-      { x: width * 0.5, y: height * 0.7, baseR: 380, r: 380, dx: 0.18, dy: -0.22, color: 'rgba(0, 114, 255, 0.11)', pullWeight: 0.015 },
-      { x: width * 0.15, y: height * 0.85, baseR: 260, r: 260, dx: 0.25, dy: -0.18, color: 'rgba(0, 245, 160, 0.09)', pullWeight: 0.012 },
-    ];
+    document.addEventListener('mouseleave', handleMouseLeave);
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // Windows Theme Bubble Renderer with Specular Gloss & Iridescent Rim
-    const drawWindowsBubble = (b: GlassBubble) => {
-      ctx.save();
+    // Financial horizontal support & resistance levels
+    const levels = [
+      { price: '85,850.00', label: 'RESISTANCE [R2]', yRatio: 0.22, color: 'rgba(244, 63, 94, 0.18)' },
+      { price: '85,420.00', label: 'INSTITUTIONAL POI [VWAP]', yRatio: 0.45, color: 'rgba(0, 242, 254, 0.22)' },
+      { price: '85,050.00', label: 'SUPPORT [S1]', yRatio: 0.68, color: 'rgba(16, 185, 129, 0.18)' },
+    ];
 
-      // Outer glassy shadow
-      ctx.shadowColor = b.colorTheme === 'cyan' ? 'rgba(0, 242, 254, 0.35)' : b.colorTheme === 'purple' ? 'rgba(168, 85, 247, 0.35)' : 'rgba(0, 245, 160, 0.3)';
-      ctx.shadowBlur = b.r * 0.35;
-
-      // 1. Iridescent Spherical Body Gradient
-      const grad = ctx.createRadialGradient(
-        b.x - b.r * 0.32,
-        b.y - b.r * 0.32,
-        b.r * 0.05,
-        b.x,
-        b.y,
-        b.r
-      );
-
-      if (b.colorTheme === 'cyan') {
-        grad.addColorStop(0, `rgba(255, 255, 255, ${0.92 * b.opacity})`);
-        grad.addColorStop(0.35, `rgba(0, 242, 254, ${0.45 * b.opacity})`);
-        grad.addColorStop(0.7, `rgba(0, 114, 255, ${0.15 * b.opacity})`);
-        grad.addColorStop(0.95, `rgba(0, 242, 254, ${0.55 * b.opacity})`);
-        grad.addColorStop(1, `rgba(255, 255, 255, ${0.75 * b.opacity})`);
-      } else if (b.colorTheme === 'purple') {
-        grad.addColorStop(0, `rgba(255, 255, 255, ${0.92 * b.opacity})`);
-        grad.addColorStop(0.35, `rgba(168, 85, 247, ${0.45 * b.opacity})`);
-        grad.addColorStop(0.7, `rgba(126, 34, 206, ${0.15 * b.opacity})`);
-        grad.addColorStop(0.95, `rgba(168, 85, 247, ${0.55 * b.opacity})`);
-        grad.addColorStop(1, `rgba(255, 255, 255, ${0.75 * b.opacity})`);
-      } else if (b.colorTheme === 'emerald') {
-        grad.addColorStop(0, `rgba(255, 255, 255, ${0.92 * b.opacity})`);
-        grad.addColorStop(0.35, `rgba(0, 245, 160, ${0.45 * b.opacity})`);
-        grad.addColorStop(0.7, `rgba(16, 185, 129, ${0.15 * b.opacity})`);
-        grad.addColorStop(0.95, `rgba(0, 245, 160, ${0.55 * b.opacity})`);
-        grad.addColorStop(1, `rgba(255, 255, 255, ${0.75 * b.opacity})`);
-      } else {
-        // Prismatic Windows iridescent rainbow shimmer
-        grad.addColorStop(0, `rgba(255, 255, 255, ${0.95 * b.opacity})`);
-        grad.addColorStop(0.25, `rgba(255, 255, 255, ${0.55 * b.opacity})`);
-        grad.addColorStop(0.5, `rgba(0, 242, 254, ${0.35 * b.opacity})`);
-        grad.addColorStop(0.75, `rgba(168, 85, 247, ${0.3 * b.opacity})`);
-        grad.addColorStop(1, `rgba(255, 255, 255, ${0.8 * b.opacity})`);
-      }
-
-      ctx.beginPath();
-      ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-      ctx.fillStyle = grad;
-      ctx.fill();
-
-      // 2. Outer Glass Ring Border
-      ctx.lineWidth = Math.max(0.8, b.r * 0.04);
-      ctx.strokeStyle = `rgba(255, 255, 255, ${0.75 * b.opacity})`;
-      ctx.stroke();
-
-      // 3. Primary Specular Highlight (The classic Windows Vista/7 top-left glossy glint)
-      ctx.shadowColor = 'transparent';
-      const specX = b.x - b.r * 0.35;
-      const specY = b.y - b.r * 0.35;
-      const specR = Math.max(1.5, b.r * 0.26);
-
-      ctx.beginPath();
-      ctx.arc(specX, specY, specR, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255, 255, 255, ${0.92 * b.opacity})`;
-      ctx.fill();
-
-      // 4. Secondary Rim Reflection (bottom-right crescent bounce)
-      const bounceX = b.x + b.r * 0.32;
-      const bounceY = b.y + b.r * 0.32;
-      const bounceR = Math.max(1, b.r * 0.14);
-
-      ctx.beginPath();
-      ctx.arc(bounceX, bounceY, bounceR, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255, 255, 255, ${0.5 * b.opacity})`;
-      ctx.fill();
-
-      ctx.restore();
-    };
+    let scrollOffset = 0;
+    const scrollSpeed = 0.25; // Gentle, soothing drifting speed
 
     const render = () => {
       ctx.clearRect(0, 0, width, height);
 
-      // Smooth spring interpolation for mouse
-      mouse.vx = (mouse.targetX - mouse.x) * 0.08;
-      mouse.vy = (mouse.targetY - mouse.y) * 0.08;
-      mouse.x += mouse.vx;
-      mouse.y += mouse.vy;
+      // Smooth mouse interpolation
+      mouse.x += (mouse.targetX - mouse.x) * 0.15;
+      mouse.y += (mouse.targetY - mouse.y) * 0.15;
 
-      // 1. Render liquid ripples
-      for (let i = ripples.length - 1; i >= 0; i--) {
-        const rp = ripples[i];
-        rp.r += 2.2;
-        rp.opacity *= 0.94;
+      // 1. Draw subtle financial Cartesian grid (TradingView / Bloomberg terminal style)
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.025)';
+      ctx.lineWidth = 1;
 
-        if (rp.opacity < 0.01 || rp.r > rp.maxR) {
-          ripples.splice(i, 1);
-          continue;
-        }
-
-        ctx.save();
+      // Vertical grid lines (time intervals)
+      const gridSpacingX = 80;
+      for (let x = 0; x < width; x += gridSpacingX) {
         ctx.beginPath();
-        ctx.arc(rp.x, rp.y, rp.r, 0, Math.PI * 2);
-        ctx.strokeStyle = `${rp.color}${rp.opacity})`;
-        ctx.lineWidth = 2.2;
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+      }
+
+      // Horizontal grid lines (price intervals)
+      const gridSpacingY = 70;
+      for (let y = 0; y < height; y += gridSpacingY) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // 2. Draw Horizontal S/R Quant Levels with subtle labels
+      ctx.save();
+      for (const lvl of levels) {
+        const y = height * lvl.yRatio;
+
+        // Dashed level line
+        ctx.strokeStyle = lvl.color;
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 6]);
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Price badge on right margin
+        ctx.font = '9px "JetBrains Mono", monospace';
+        ctx.fillStyle = lvl.color.replace('0.18', '0.45').replace('0.22', '0.55');
+        ctx.textAlign = 'right';
+        ctx.fillText(`${lvl.label} • ${lvl.price}`, width - 24, y - 6);
+      }
+      ctx.restore();
+
+      // 3. Render Subtle Procedural Candlesticks & Volume
+      if (!prefersReducedMotion) {
+        scrollOffset += scrollSpeed;
+      }
+
+      // Find min and max price to scale cleanly into middle third of viewport
+      let minPrice = Infinity;
+      let maxPrice = -Infinity;
+      for (const c of candles) {
+        if (c.low < minPrice) minPrice = c.low;
+        if (c.high > maxPrice) maxPrice = c.high;
+      }
+      const priceRange = Math.max(100, maxPrice - minPrice);
+      const chartTop = height * 0.22;
+      const chartHeight = height * 0.52;
+
+      const priceToY = (price: number) => {
+        return chartTop + (1 - (price - minPrice) / priceRange) * chartHeight;
+      };
+
+      // Moving Average line points
+      const maPoints: { x: number; y: number }[] = [];
+
+      ctx.save();
+      for (let i = 0; i < candles.length; i++) {
+        const c = candles[i];
+        const screenX = c.x - (scrollOffset % (candleCount * candleSpacing));
+        
+        // Wrap around seamlessly
+        const adjustedX = screenX < -candleSpacing ? screenX + candleCount * candleSpacing : screenX;
+        if (adjustedX < -candleSpacing || adjustedX > width + candleSpacing) continue;
+
+        const openY = priceToY(c.open);
+        const closeY = priceToY(c.close);
+        const highY = priceToY(c.high);
+        const lowY = priceToY(c.low);
+
+        const isBull = c.isBullish;
+        const color = isBull ? 'rgba(16, 185, 129, ' : 'rgba(244, 63, 94, ';
+        const candleOpacity = 0.14; // Subtle, elegant, non-distracting
+
+        // 3a. Draw High/Low Wick
+        ctx.strokeStyle = `${color}${candleOpacity * 1.3})`;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(adjustedX, highY);
+        ctx.lineTo(adjustedX, lowY);
         ctx.stroke();
 
-        // Inner soft liquid glow
+        // 3b. Draw Candle Body
+        const topY = Math.min(openY, closeY);
+        const bodyHeight = Math.max(2, Math.abs(closeY - openY));
+
+        ctx.fillStyle = `${color}${candleOpacity})`;
+        ctx.fillRect(adjustedX - candleWidth / 2, topY, candleWidth, bodyHeight);
+
+        // Candle border for crisp definition
+        ctx.strokeStyle = `${color}${candleOpacity * 1.5})`;
+        ctx.strokeRect(adjustedX - candleWidth / 2, topY, candleWidth, bodyHeight);
+
+        // 3c. Draw Faint Volume Bars at bottom
+        const volHeight = (c.volume / 100) * 48;
+        ctx.fillStyle = `${color}${candleOpacity * 0.5})`;
+        ctx.fillRect(adjustedX - candleWidth / 2, height - volHeight - 20, candleWidth, volHeight);
+
+        // Store for Moving Average
+        if (i % 2 === 0) {
+          maPoints.push({ x: adjustedX, y: (openY + closeY) / 2 });
+        }
+      }
+
+      // 3d. Draw Subtle Fast Trend Curve (EMA)
+      if (maPoints.length > 2) {
+        maPoints.sort((a, b) => a.x - b.x);
         ctx.beginPath();
-        ctx.arc(rp.x, rp.y, rp.r * 0.65, 0, Math.PI * 2);
-        ctx.fillStyle = `${rp.color}${rp.opacity * 0.12})`;
+        ctx.moveTo(maPoints[0].x, maPoints[0].y);
+        for (let i = 1; i < maPoints.length; i++) {
+          ctx.lineTo(maPoints[i].x, maPoints[i].y);
+        }
+        ctx.strokeStyle = 'rgba(0, 242, 254, 0.12)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // 4. Draw Quant Cursor Crosshairs & Coordinate Chip
+      if (mouse.active && mouse.x > 0 && mouse.x < width && mouse.y > 0 && mouse.y < height) {
+        ctx.save();
+
+        // Hairline Crosshair (horizontal & vertical)
+        ctx.strokeStyle = 'rgba(0, 242, 254, 0.16)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 4]);
+
+        // Horizontal Line
+        ctx.beginPath();
+        ctx.moveTo(0, mouse.y);
+        ctx.lineTo(width, mouse.y);
+        ctx.stroke();
+
+        // Vertical Line
+        ctx.beginPath();
+        ctx.moveTo(mouse.x, 0);
+        ctx.lineTo(mouse.x, height);
+        ctx.stroke();
+
+        ctx.setLineDash([]);
+
+        // Small Quant Coordinate Chip near cursor
+        const chipX = Math.min(width - 140, mouse.x + 14);
+        const chipY = Math.max(25, mouse.y - 12);
+        
+        ctx.fillStyle = 'rgba(7, 11, 25, 0.85)';
+        ctx.strokeStyle = 'rgba(0, 242, 254, 0.3)';
+        ctx.lineWidth = 1;
+        
+        // Chip background
+        ctx.beginPath();
+        ctx.roundRect(chipX, chipY - 14, 115, 20, 4);
         ctx.fill();
+        ctx.stroke();
+
+        // Chip coordinate text
+        ctx.font = '9px "JetBrains Mono", monospace';
+        ctx.fillStyle = '#00f2fe';
+        ctx.textAlign = 'left';
+        const simulatedPrice = (85000 + (1 - mouse.y / height) * 1000).toFixed(2);
+        ctx.fillText(`PX: $${simulatedPrice}`, chipX + 8, chipY);
+
         ctx.restore();
-      }
-
-      // 2. Render interactive fluid blobs
-      for (const b of blobs) {
-        if (!prefersReducedMotion) {
-          b.x += b.dx;
-          b.y += b.dy;
-
-          // Magnetic liquid pull towards mouse cursor
-          const distToMouse = Math.hypot(mouse.x - b.x, mouse.y - b.y);
-          if (distToMouse < 600) {
-            b.x += (mouse.x - b.x) * b.pullWeight;
-            b.y += (mouse.y - b.y) * b.pullWeight;
-            b.r = b.baseR + (1 - distToMouse / 600) * 55;
-          } else {
-            b.r += (b.baseR - b.r) * 0.05;
-          }
-
-          if (b.x < -100 || b.x > width + 100) b.dx *= -1;
-          if (b.y < -100 || b.y > height + 100) b.dy *= -1;
-        }
-
-        const grad = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r);
-        grad.addColorStop(0, b.color);
-        grad.addColorStop(0.5, b.color.replace('0.', '0.0'));
-        grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      // 3. Update & Render Windows Theme Glass Bubbles with Mouse Repulsion Physics
-      for (let i = bubbles.length - 1; i >= 0; i--) {
-        const b = bubbles[i];
-
-        if (!prefersReducedMotion) {
-          // Upward buoyancy
-          b.y += b.vy;
-          // Sinusoidal horizontal wobble
-          b.wobblePhase += b.wobbleSpeed;
-          b.x += b.vx + Math.sin(b.wobblePhase) * b.wobbleAmp;
-
-          // Fluid Mouse Repulsion (bubbles smoothly push away when mouse approaches)
-          const dx = b.x - mouse.x;
-          const dy = b.y - mouse.y;
-          const dist = Math.hypot(dx, dy);
-          const pushRadius = 180 + b.r;
-
-          if (dist < pushRadius && dist > 1) {
-            const force = (1 - dist / pushRadius) * 4.5;
-            const nx = dx / dist;
-            const ny = dy / dist;
-            b.x += nx * force;
-            b.y += ny * force;
-            // Viscous squish/bulge on interaction
-            b.r = b.baseR * (1 + (1 - dist / pushRadius) * 0.22);
-          } else {
-            b.r += (b.baseR - b.r) * 0.1;
-          }
-
-          // Friction on extra burst velocity
-          b.vx *= 0.98;
-
-          // Screen wrap-around or recycle
-          if (b.y < -b.r * 2) {
-            b.y = height + b.r * 2;
-            b.x = Math.random() * width;
-          }
-          if (b.x < -b.r * 2) b.x = width + b.r;
-          if (b.x > width + b.r * 2) b.x = -b.r;
-        }
-
-        drawWindowsBubble(b);
       }
 
       if (!prefersReducedMotion) {
@@ -417,39 +300,38 @@ export const LiquidBackground: React.FC = () => {
     return () => {
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('click', handleClick);
+      document.removeEventListener('mouseleave', handleMouseLeave);
       cancelAnimationFrame(animationFrameId);
     };
   }, []);
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-      {/* Dynamic Liquid Ripple & Windows Glass Bubbles Canvas */}
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full opacity-90" />
+    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden bg-[#030611]">
+      {/* Stock Market Candlestick & Financial Grid Canvas */}
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
 
-      {/* Interactive Liquid Glass Spotlight (Smooth cursor follower) */}
+      {/* Subtle Quant Spotlight (Smooth cursor follower for high-end feel) */}
       <div
         ref={spotlightRef}
-        className="absolute top-0 left-0 -ml-64 -mt-64 w-[512px] h-[512px] rounded-full pointer-events-none transition-opacity duration-500 opacity-0 mix-blend-screen"
+        className="absolute top-0 left-0 -ml-72 -mt-72 w-[576px] h-[576px] rounded-full pointer-events-none transition-opacity duration-300 opacity-0 mix-blend-screen"
         style={{
-          background: 'radial-gradient(circle, rgba(0, 242, 254, 0.14) 0%, rgba(168, 85, 247, 0.09) 40%, transparent 70%)',
-          filter: 'blur(30px)',
+          background: 'radial-gradient(circle, rgba(0, 242, 254, 0.06) 0%, rgba(16, 185, 129, 0.03) 45%, transparent 70%)',
+          filter: 'blur(40px)',
           willChange: 'transform',
         }}
       />
 
-      {/* Subtle Liquid Glass Perspective Grid Overlay */}
+      {/* Ambient Vignette Overlay to ensure text readability */}
       <div 
-        className="absolute inset-0 opacity-[0.035]" 
+        className="absolute inset-0 pointer-events-none"
         style={{
-          backgroundImage: `linear-gradient(to right, #ffffff 1px, transparent 1px), linear-gradient(to bottom, #ffffff 1px, transparent 1px)`,
-          backgroundSize: '48px 48px'
+          background: 'radial-gradient(ellipse at center, transparent 40%, rgba(3, 6, 17, 0.75) 100%)'
         }}
       />
 
-      {/* Top Ambient Highlight */}
-      <div className="absolute top-0 inset-x-0 h-96 bg-gradient-to-b from-[#00f2fe]/[0.08] via-transparent to-transparent pointer-events-none" />
+      {/* Subtle Top & Bottom Gradient Dimmers */}
+      <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-[#030611] to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 inset-x-0 h-40 bg-gradient-to-t from-[#030611] to-transparent pointer-events-none" />
     </div>
   );
 };
-
